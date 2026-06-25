@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package - Reparto Eficiente</title>
+    <meta name="theme-color" content="#334155">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23334155%22/><path d=%22M30 30h40v40H30z%22 fill=%22%2394a3b8%22/></svg>">
+    
+    <link id="pwa-manifest" rel="manifest">
+
+    <style>
+        /* Estilos basados en una paleta de grises profesionales y limpios */
+        :root {
+            --bg-principal: #0f172a;
+            --bg-tarjeta: #1e293b;
+            --gris-oscuro: #334155;
+            --gris-medio: #64748b;
+            --gris-claro: #94a3b8;
+            --texto-blanco: #f8fafc;
+            --acento-verde: #10b981;
+            --acento-azul: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-blanco);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gris-oscuro);
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--texto-blanco);
+            letter-spacing: -0.5px;
+        }
+
+        header h1 span {
+            color: var(--gris-claro);
+            font-weight: 300;
+        }
+
+        .estado-pwa {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: var(--gris-oscuro);
+            color: var(--gris-claro);
+        }
+
+        main {
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        .panel-repartidor {
+            background-color: var(--bg-tarjeta);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--gris-oscuro);
+        }
+
+        .panel-titulo {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gris-claro);
+            margin-bottom: 10px;
+        }
+
+        .coordenadas-caja {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-principal);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--acento-azul);
+        }
+
+        .lista-paquetes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tarjeta-paquete {
+            background-color: var(--bg-tarjeta);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 5px solid var(--gris-medio);
+            transition: all 0.3s ease;
+        }
+
+        .tarjeta-paquete.notificado {
+            border-left-color: var(--acento-azul);
+        }
+
+        .tarjeta-paquete.entregado {
+            border-left-color: var(--acento-verde);
+            opacity: 0.6;
+        }
+
+        .paquete-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .paquete-id {
+            font-size: 12px;
+            font-weight: bold;
+            background-color: var(--gris-oscuro);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--texto-blanco);
+        }
+
+        .paquete-estado {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .estado-en_ruta { color: var(--gris-claro); }
+        .estado-notificado { color: var(--acento-azul); }
+        .estado-entregado { color: var(--acento-verde); }
+
+        .paquete-info h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .paquete-info p {
+            font-size: 13px;
+            color: var(--gris-claro);
+        }
+
+        .consola-alertas {
+            background-color: #000000;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #10b981;
+            height: 120px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid var(--gris-oscuro);
+        }
+
+        .btn-simular {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--gris-oscuro);
+            color: var(--texto-blanco);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-simular:hover {
+            background-color: var(--gris-medio);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Package<span>.app</span></h1>
+        <div id="pwa-badge" class="estado-pwa">Modo Web</div>
+    </header>
+
+    <main>
+        <div class="panel-repartidor">
+            <div class="panel-titulo">Ubicación del Repartidor (GPS)</div>
+            <div class="coordenadas-caja">
+                <span id="gps-lat">Lat: Buscando...</span>
+                <span id="gps-lon">Lon: Buscando...</span>
+            </div>
+            <button class="btn-simular" onclick="simularMovimientoRuta()">Simular Aproximación de Ruta</button>
+        </div>
+
+        <div class="panel-titulo">Entregas Gestionadas Activas</div>
+        <div id="contenedor-paquetes" class="lista-paquetes"></div>
+
+        <div class="panel-titulo" style="margin-top: 20px;">Historial de Eventos del Sistema</div>
+        <div id="consola" class="consola-alertas">> Sistema Package iniciado de forma segura...</div>
+    </main>
+
+    <script>
+        // medbasha
+
+        // ==========================================
+        // 1. GENERACIÓN DINÁMICA DE ARCHIVOS PWA
+        // ==========================================
+        const manifestData = {
+            "short_name": "Package",
+            "name": "Package - Reparto Leve",
+            "icons": [{
+                "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23334155%22/><path d=%22M30 30h40v40H30z%22 fill=%22%2394a3b8%22/></svg>",
+                "type": "image/svg+xml",
+                "sizes": "512x512"
+            }],
+            "start_url": ".",
+            "background_color": "#0f172a",
+            "theme-color": "#334155",
+            "display": "standalone",
+            "orientation": "portrait"
+        };
+        
+        document.getElementById('pwa-manifest').setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestData)));
+
+        const swCode = `
+            const CACHE_NAME = 'package-v1';
+            const ASSETS = ['.', 'index.html'];
+            self.addEventListener('install', e => {
+                e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+            });
+            self.addEventListener('fetch', e => {
+                e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+            });
+        `;
+
+        if ('serviceWorker' in navigator) {
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl, { scope: './' })
+                .then(() => { document.getElementById('pwa-badge').innerText = 'PWA Activa'; })
+                .catch(() => { document.getElementById('pwa-badge').innerText = 'Local'; });
+        }
+
+        // ==========================================
+        // 2. LÓGICA DE NEGOCIO Y GEOLOCALIZACIÓN
+        // ==========================================
+        class PackageRouteManager {
+            constructor(radioAvisoMetros = 300) {
+                this.paquetes = [];
+                this.radioAvisoMetros = radioAvisoMetros;
+            }
+
+            cargarPaquetes(listaPaquetes) {
+                this.paquetes = listaPaquetes.map(pkg => ({
+                    id: pkg.id,
+                    cliente: pkg.cliente_nombre,
+                    telefono: pkg.cliente_telefono,
+                    direccion: pkg.direccion,
+                    coordenadas: { lat: pkg.coordenadas.latitud, lon: pkg.coordenadas.longitud },
+                    notificacionEnviada: false,
+                    estado: 'en_ruta'
+                }));
+                this.renderizarInterfaz();
+            }
+
+            _calcularDistanciaMetros(lat1, lon1, lat2, lon2) {
+                const RADIO_TIERRA_METROS = 6371000;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                return RADIO_TIERRA_METROS * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+            }
+
+            actualizarUbicacionRepartidor(lat, lon) {
+                document.getElementById('gps-lat').innerText = `Lat: ${lat.toFixed(5)}`;
+                document.getElementById('gps-lon').innerText = `Lon: ${lon.toFixed(5)}`;
+
+                this.paquetes.forEach(paquete => {
+                    if (paquete.estado === 'en_ruta' && !paquete.notificacionEnviada) {
+                        const distancia = this._calcularDistanciaMetros(lat, lon, paquete.coordenadas.lat, paquete.coordenadas.lon);
+                        if (distancia <= this.radioAvisoMetros) {
+                            this._dispararNotificacionCliente(paquete, Math.round(distancia));
+                        }
+                    }
+                });
+            }
+
+            _dispararNotificacionCliente(paquete, distancia) {
+                paquete.notificacionEnviada = true;
+                paquete.estado = 'notificado';
+                
+                const logTexto = `[SMS] Enviado a ${paquete.cliente} (${paquete.telefono}): En camino a ${paquete.direccion}. Cercanía: ${distancia}m.`;
+                registrarEnConsola(logTexto);
+                
+                this.renderizarInterfaz();
+            }
+
+            marcarComoEntregado(idPaquete) {
+                const paquete = this.paquetes.find(p => p.id === idPaquete);
+                if (paquete) {
+                    paquete.estado = 'entregado';
+                    registrarEnConsola(`[Sistema] Paquete ${idPaquete} entregado con éxito.`);
+                    this.renderizarInterfaz();
+                }
+            }
+
+            renderizarInterfaz() {
+                const contenedor = document.getElementById('contenedor-paquetes');
+                contenedor.innerHTML = '';
+
+                this.paquetes.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = `tarjeta-paquete ${p.estado}`;
+                    div.innerHTML = `
+                        <div class="paquete-header">
+                            <span class="paquete-id">${p.id}</span>
+                            <span class="paquete-estado estado-${p.estado}">${p.estado.replace('_', ' ')}</span>
+                        </div>
+                        <div class="paquete-info">
+                            <h3>${p.cliente}</h3>
+                            <p>${p.direccion}</p>
+                            <p style="font-size:11px; margin-top:4px; color:var(--gris-medio);">Tlf: ${p.telefono}</p>
+                        </div>
+                        ${p.estado === 'notificado' ? `<button class="btn-simular" style="background-color:var(--acento-verde); margin-top:10px;" onclick="packageApp.marcarComoEntregado('${p.id}')">Marcar Entregado</button>` : ''}
+                    `;
+                    contenedor.appendChild(div);
+                });
+            }
+        }
+
+        // ==========================================
+        // 3. INICIALIZACIÓN DE DATOS DE PRUEBA (Menorca)
+        // ==========================================
+        const packageApp = new PackageRouteManager(300);
+
+        const entregasDelDia = [
+            { id: "PKG-001", cliente_nombre: "Maria Pons", cliente_telefono: "+34611223344", direccion: "Carrer de sa Rovellada, Mahón", coordenadas: { latitud: 39.8875, longitud: 4.2621 } },
+            { id: "PKG-002", cliente_nombre: "Joan Sales", cliente_telefono: "+34655778899", direccion: "Plaza de la Constitución, Mahón", coordenadas: { latitud: 39.8890, longitud: 4.2645 } }
+        ];
+
+        packageApp.cargarPaquetes(entregasDelDia);
+
+        // Activación del GPS Nativo en producción si el repartidor concede permisos
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                pos => { packageApp.actualizarUbicacionRepartidor(pos.coords.latitude, pos.coords.longitude); },
+                err => { registrarEnConsola("[GPS] Usando simulador (Permiso denegado o entorno local)."); },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        // Auxiliares de Interfaz
+        function registrarEnConsola(texto) {
+            const con = document.getElementById('consola');
+            con.innerHTML += `<br>> ${texto}`;
+            con.scrollTop = con.scrollHeight;
+        }
+
+        // Simulador de movimiento controlado paso a paso
+        let paso = 0;
+        function simularMovimientoRuta() {
+            paso++;
+            if (paso === 1) {
+                registrarEnConsola("[Ruta] Repartidor saliendo de base...");
+                packageApp.actualizarUbicacionRepartidor(39.8820, 4.2550);
+            } else if (paso === 2) {
+                registrarEnConsola("[Ruta] El vehículo entra en zona de cobertura para Maria Pons...");
+                packageApp.actualizarUbicacionRepartidor(39.8858, 4.2602);
+            } else if (paso === 3) {
+                registrarEnConsola("[Ruta] Avanzando hacia el centro histórico de Mahón...");
+                packageApp.actualizarUbicacionRepartidor(39.8885, 4.2638);
+            } else {
+                registrarEnConsola("[Ruta] Fin del trayecto de pruebas.");
+                paso = 0;
+            }
+        }
+    </script>
+</body>
+</html>
